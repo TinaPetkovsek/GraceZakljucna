@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import School from "./School";
+import { Input } from "@/components/ui/input";
 
 import {
   Select,
@@ -12,6 +13,8 @@ import {
 export default function App() {
   const [data, setData] = useState([]);
   const [obcine, setObcine] = useState([]);
+  const [selectedObcina, setSelectedObcina] = useState("all");
+  const [search, setSearch] = useState(0);
 
   async function getSchools() {
     const response = await fetch("http://static.404.si/grace/");
@@ -30,33 +33,54 @@ export default function App() {
     getMunicipality();
   }, []);
 
+  useEffect(() => {
+    console.log(search);
+  }, [search]);
+
   return (
     <>
-      <div className="container mb-4 mt-4">
-        <div className="flex gap-4">
+      <div className="container mb-3 mt-3">
+        <div className="flex gap-2">
           {/* Ne pozabi na onValueChange event. */}
-          <Select>
+          <Select onValueChange={(value) => setSelectedObcina(value)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Regija" />
+              <SelectValue placeholder="Občina" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Vse občine</SelectItem>
+              {obcine.map((obcina) => (
+                <SelectItem value={obcina}>{obcina}</SelectItem>
+              ))}
               {/* Uporabi map funkcijo, ki se bo sprehodila, čez vse občine in jih prikazala v obliki SelectItemov. */}
             </SelectContent>
           </Select>
+
+          <Input
+            placeholder="Išči po poštni številki"
+            onChange={(value) => setSearch(value.target.value)}
+            type="number"
+          ></Input>
 
           {/* Dodaj input, ki bo omogčal iskanje po poštni številki. Ne pozabi na onChange event. */}
         </div>
       </div>
       <div className="container">
-        <div class="">
+        <div className="grid grid-cols-3">
           {/* Uporabi map funkcijo, ki se bo sprehodila, čez vse šole in jih prikazala v obliki kartic. */}
           {/* Dodaj dva filtra: enega za filtriranje po obcini, drugega za filtriranje glede na poštno številko šole. */}
-          {data.map((school) => (
-            <div>
+          {data
+            .filter(
+              (school) =>
+                selectedObcina == "all" || school.obcina == selectedObcina,
+            )
+            .filter(
+              (school) =>
+                search == "" ||
+                school.postna_stevilka.toString().startsWith(search),
+            )
+            .map((school) => (
               <School data={school}></School>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </>
