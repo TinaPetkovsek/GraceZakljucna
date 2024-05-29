@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import School from "./School";
 import { Input } from "@/components/ui/input";
+import Info from "./Info";
 
 import {
   Select,
@@ -15,6 +16,7 @@ export default function App() {
   const [obcine, setObcine] = useState([]);
   const [selectedObcina, setSelectedObcina] = useState("all");
   const [search, setSearch] = useState(0);
+  const [filter, setFilter] = useState([]);
 
   async function getSchools() {
     const response = await fetch("http://static.404.si/grace/");
@@ -32,6 +34,21 @@ export default function App() {
     getSchools();
     getMunicipality();
   }, []);
+
+  useEffect(() => {
+    setFilter(
+      data
+        .filter(
+          (school) =>
+            selectedObcina == "all" || school.obcina == selectedObcina,
+        )
+        .filter(
+          (school) =>
+            search == "" ||
+            school.postna_stevilka.toString().startsWith(search),
+        ),
+    );
+  }, [selectedObcina, search, data]);
 
   useEffect(() => {
     console.log(search);
@@ -60,6 +77,8 @@ export default function App() {
             onChange={(value) => setSearch(value.target.value)}
             type="number"
           ></Input>
+          <Info filter={filter}></Info>
+          {filter.length}
 
           {/* Dodaj input, ki bo omogčal iskanje po poštni številki. Ne pozabi na onChange event. */}
         </div>
@@ -68,19 +87,9 @@ export default function App() {
         <div className="grid grid-cols-3">
           {/* Uporabi map funkcijo, ki se bo sprehodila, čez vse šole in jih prikazala v obliki kartic. */}
           {/* Dodaj dva filtra: enega za filtriranje po obcini, drugega za filtriranje glede na poštno številko šole. */}
-          {data
-            .filter(
-              (school) =>
-                selectedObcina == "all" || school.obcina == selectedObcina,
-            )
-            .filter(
-              (school) =>
-                search == "" ||
-                school.postna_stevilka.toString().startsWith(search),
-            )
-            .map((school) => (
-              <School data={school}></School>
-            ))}
+          {filter.map((school) => (
+            <School data={school}></School>
+          ))}
         </div>
       </div>
     </>
