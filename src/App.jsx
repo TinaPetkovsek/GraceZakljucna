@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import School from "./School";
 import { Input } from "@/components/ui/input";
 import Info from "./Info";
+import Grafi from "./Grafi";
 
 import {
   Select,
@@ -18,6 +19,8 @@ export default function App() {
   const [search, setSearch] = useState(0);
   const [filter, setFilter] = useState([]);
 
+  const [prebivalstvo, setPrebivalstvo] = useState([]);
+
   async function getSchools() {
     const response = await fetch("https://static.404.si/grace/");
     const data = await response.json();
@@ -30,9 +33,17 @@ export default function App() {
     setObcine(data);
   }
 
+  async function getPrebivalstvo() {
+    const response = await fetch("https://static.404.si/grace/prebivalstvo/");
+    const data = await response.json();
+    setPrebivalstvo([Object.keys(data), Object.values(data)]);
+    console.log(prebivalstvo);
+  }
+
   useEffect(() => {
     getSchools();
     getMunicipality();
+    getPrebivalstvo();
   }, []);
 
   useEffect(() => {
@@ -83,7 +94,9 @@ export default function App() {
           {/* Dodaj input, ki bo omogčal iskanje po poštni številki. Ne pozabi na onChange event. */}
         </div>
       </div>
+
       <div className="container">
+        <Grafi prebivalstvo={prebivalstvo}></Grafi>
         <div className="grid grid-cols-3">
           {/* Uporabi map funkcijo, ki se bo sprehodila, čez vse šole in jih prikazala v obliki kartic. */}
           {/* Dodaj dva filtra: enega za filtriranje po obcini, drugega za filtriranje glede na poštno številko šole. */}
