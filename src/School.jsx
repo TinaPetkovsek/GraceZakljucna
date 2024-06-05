@@ -69,8 +69,7 @@ export default function School(props) {
                     Davčna številka: <span className="font-normal">{ds}</span>
                   </li>
                   <li>
-                    Bančni račun:
-                    <span className="font-normal">{trr}</span>
+                    Bančni račun: <span className="font-normal">{trr}</span>
                   </li>
                 </DialogDescription>
               </DialogHeader>
